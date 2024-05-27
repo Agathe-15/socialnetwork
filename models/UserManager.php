@@ -17,16 +17,11 @@ function GetAllUsers()
 
 function GetUserIdFromUserAndPassword($username, $password)
 {
-  // Préparer la requête SQL pour récupérer l'utilisateur avec le nom d'utilisateur donné
   global $PDO;
-  $stmt = $PDO->prepare("SELECT id, password FROM user WHERE username = :username");
-  $stmt->execute(['username' => $username]);
+  $response = $PDO->query("SELECT id, password FROM user WHERE nickname = '$username'");
+  $user = $response->fetch(PDO::FETCH_ASSOC);
 
-  // Récupérer l'utilisateur
-  $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-  // Vérifier si l'utilisateur existe et si le mot de passe est correct
-  if ($user && password_verify($password, $user['password'])) {
+  if ($user && $user['password'] === $password) {
     return $user['id'];
   } else {
     return -1;

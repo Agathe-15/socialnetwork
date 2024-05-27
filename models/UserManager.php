@@ -4,26 +4,53 @@ include_once "PDO.php";
 function GetOneUserFromId($id)
 {
   global $PDO;
-  $response = $PDO->query("SELECT * FROM user WHERE id = $id");
-  return $response->fetch();
+  $stmt = $PDO->prepare("SELECT * FROM user WHERE id = :id");
+  $stmt->execute(['id' => $id]);
+  return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function GetAllUsers()
 {
   global $PDO;
-  $response = $PDO->query("SELECT * FROM user ORDER BY nickname ASC");
-  return $response->fetchAll();
+  $stmt = $PDO->prepare("SELECT * FROM user ORDER BY nickname ASC");
+  $stmt->execute();
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function GetUserIdFromUserAndPassword($username, $password)
 {
   global $PDO;
-  $response = $PDO->query("SELECT id, password FROM user WHERE nickname = '$username'");
-  $user = $response->fetch(PDO::FETCH_ASSOC);
-
-  if ($user && $user['password'] === $password) {
+  $stmt = $PDO->prepare("SELECT id, password FROM user WHERE nickname = :username");
+  $stmt->execute(['username' => $username]);
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+  if ($user && $password == $user['password']) {
     return $user['id'];
   } else {
     return -1;
   }
+}
+
+function IsNicknameFree($nickname)
+{
+  global $PDO;
+  $response = $PDO->prepare("SELECT * FROM user WHERE nickname = :nickname ");
+  $response->execute(
+    array(
+      "nickname" => $nickname
+    )
+  );
+  return $response->rowCount() == 0;
+}
+
+function CreateNewUser($nickname, $password)
+{
+  global $PDO;
+  $response = $PDO->prepare("INSERT INTO user (nickname, password) values (:nickname , :password )");
+  $response->execute(
+    array(
+      "nickname" => $nickname,
+      "password" => $password
+    )
+  );
+  return $PDO->lastInsertId();
 }

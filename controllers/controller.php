@@ -26,11 +26,15 @@ switch ($action) {
 
   case 'display':
   default:
+
     include "../models/PostManager.php";
-    $posts = GetAllPosts();
+    if (isset($_GET['search'])) {
+      $posts = SearchInPosts($_GET['search']);
+    } else {
+      $posts = GetAllPosts();
+    }
 
     include "../models/CommentManager.php";
-    $comments = array();
 
     // ===================HARDCODED PART===========================
     // format idPost => array of comments

@@ -1,10 +1,15 @@
 <?php
 include_once "PDO.php";
 
-function GetOnePostFromId($id)
+function GetOneCommentFromId($id)
 {
   global $PDO;
-  $response = $PDO->query("SELECT * FROM post WHERE id = $id");
+  $response = $PDO->prepare("SELECT * FROM comment WHERE id = :id ");
+  $response->execute(
+    array(
+      "id" => $id
+    )
+  );
   return $response->fetch();
 }
 
@@ -19,14 +24,20 @@ function GetAllPosts()
   return $response->fetchAll();
 }
 
-function SearchInPosts($search = '')
+function SearchInPosts($search)
 {
   global $PDO;
-  $response = $PDO->query(
+  $response = $PDO->prepare(
     "SELECT post.*, user.nickname "
       . "FROM post LEFT JOIN user on (post.user_id = user.id) "
-      . "WHERE content like '%$search%' "
+      . "WHERE content like :search "
       . "ORDER BY post.created_at DESC"
+  );
+  $searchWithPercent = "%$search%";
+  $response->execute(
+    array(
+      "search" => $searchWithPercent
+    )
   );
   return $response->fetchAll();
 }
@@ -41,8 +52,11 @@ function GetAllPostsFromUserId($userId)
 function CreateNewPost($userId, $msg)
 {
   global $PDO;
-  $response = $PDO->query(
-    "INSERT INTO post(user_id, content) values ($userId, '$msg')"
+  $response = $PDO->prepare("INSERT INTO post(user_id, content) values (:userId, :msg)");
+  $response->execute(
+    array(
+      "userId" => $userId,
+      "msg" => $msg
+    )
   );
-  return $response->fetchAll();
 }

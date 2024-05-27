@@ -1,13 +1,6 @@
 <?php
 include_once "PDO.php";
 
-function GetOneCommentFromId($id)
-{
-  global $PDO;
-  $response = $PDO->query("SELECT * FROM comment WHERE id = $id");
-  return $response->fetch();
-}
-
 function GetAllComments()
 {
   global $PDO;

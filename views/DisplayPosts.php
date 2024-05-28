@@ -82,6 +82,7 @@
         }
         ?>
       </div>
+
     </div>
     <div class="row">
       <div class="col">
@@ -107,24 +108,18 @@
               <div class="post-footer">
                 <ul class="comments-list">
                   <?php
-                  $postId = $onePost['id'];
-                  if (isset($comments[$postId])) {
-                    foreach ($comments[$postId] as $comment) {
+                  if (isset($_SESSION['userId'])) {
                   ?>
-                      <li class="comment">
-                        <a class="pull-left" href="#">
-                          <img class="avatar" src="img/avatars/default.png">
-                        </a>
-                        <div class="comment-body">
-                          <div class="comment-heading">
-                            <h4 class="user"><?= htmlspecialchars($comment['nickname']); ?></h4>
-                            <h5 class="time"><?= $comment['created_at']; ?></h5>
-                          </div>
-                          <p><?= htmlspecialchars($comment['content']); ?></p>
-                        </div>
-                      </li>
+                    <div class="input-group">
+                      <form class="input-group" method="POST" action="?action=newComment">
+                        <input name="postId" type="hidden" value="<?= $onePost['id'] ?>">
+                        <input name="comment" class="form-control" placeholder="Add a comment" type="text">
+                        <span class="input-group-text">
+                          <a href="#" onclick="$(this).closest('form').submit()"><i class="fa fa-edit"></i></a>
+                        </span>
+                      </form>
+                    </div>
                   <?php
-                    }
                   }
                   ?>
                 </ul>
